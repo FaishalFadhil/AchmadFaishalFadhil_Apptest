@@ -113,32 +113,37 @@ const FormScreen = ({
   return (
     <ScrollView>
       <View style={styles.container}>
-        {formState.photo && isUrl(formState.photo) && (
-          <Image
-            resizeMode="cover"
-            style={styles.image}
-            source={{
-              uri: formState.photo,
-            }}
-          />
-        )}
+        <Image
+          resizeMode="cover"
+          style={styles.image}
+          source={{
+            uri:
+              formState.photo && isUrl(formState.photo)
+                ? formState.photo
+                : 'https://i1.sndcdn.com/avatars-000437232558-yuo0mv-t500x500.jpg',
+          }}
+        />
         <Card containerStyle={styles.card}>
           <Card.Title h4>{data ? 'Edit Form' : 'Create Form'}</Card.Title>
           <View style={styles.user}>
-            <Input
-              label="First Name"
-              placeholder="Input First Name Here"
-              onChangeText={value => setValue('firstName', value)}
-              value={formState.firstName}
-              inputStyle={styles.input}
-            />
-            <Input
-              label="Last Name"
-              placeholder="Input Last Name Here"
-              onChangeText={value => setValue('lastName', value)}
-              value={formState.lastName}
-              inputStyle={styles.input}
-            />
+            <View style={styles.nameForm}>
+              <Input
+                label="First Name"
+                placeholder="Input First Name Here"
+                onChangeText={value => setValue('firstName', value)}
+                value={formState.firstName}
+                inputStyle={styles.input}
+                blurOnSubmit={true}
+              />
+              <Input
+                label="Last Name"
+                placeholder="Input Last Name Here"
+                onChangeText={value => setValue('lastName', value)}
+                value={formState.lastName}
+                inputStyle={styles.input}
+                blurOnSubmit={true}
+              />
+            </View>
             <Input
               label="Age"
               placeholder="Input Age Here"
@@ -146,6 +151,7 @@ const FormScreen = ({
               value={formState.age}
               keyboardType="numeric"
               inputStyle={styles.input}
+              blurOnSubmit={true}
             />
             <Input
               label="Photo"
@@ -153,6 +159,7 @@ const FormScreen = ({
               onChangeText={value => setValue('photo', value)}
               value={formState.photo}
               inputStyle={styles.input}
+              blurOnSubmit={true}
             />
             <View style={styles.iconCont}>
               {formState.firstName &&
@@ -201,6 +208,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    marginVertical: 20,
   },
   card: {
     borderRadius: 16,
@@ -212,11 +220,16 @@ const styles = StyleSheet.create({
     minWidth: 300,
     minHeight: 300,
   },
+  nameForm: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: 150,
+  },
   image: {
     width: 200,
     height: 200,
     borderRadius: 100,
-    marginBottom: 25,
+    marginBottom: 20,
   },
   input: {
     fontSize: 18,

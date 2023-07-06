@@ -29,6 +29,7 @@ const HomeScreen = ({
     id: '',
   });
   const [deleteList, setDeleteList] = useState(false);
+  const [editList, setEditList] = useState(false);
   const scrollViewRef = useRef();
 
   const toggleDialog = () => {
@@ -60,6 +61,7 @@ const HomeScreen = ({
 
   useEffect(() => {
     fetchContactList();
+    scrollViewRef.current.scrollTo({x: 0, y: 0, animated: true});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -103,7 +105,7 @@ const HomeScreen = ({
                       source={{
                         uri:
                           !d.photo || !isUrl(d.photo)
-                            ? 'https://avatars0.githubusercontent.com/u/32242596?s=460&u=1ea285743fc4b083f95d6ee0be2e7bb8dcfc676e&v=4'
+                            ? 'https://i1.sndcdn.com/avatars-000437232558-yuo0mv-t500x500.jpg'
                             : d.photo,
                       }}
                     />
@@ -114,15 +116,27 @@ const HomeScreen = ({
                       <Text style={styles.age}>{`${d.age} years old`}</Text>
                     </View>
                   </View>
-                  {deleteList && (
-                    <TouchableOpacity
-                      style={styles.option}
-                      onPress={() =>
-                        setDeleteDialog(d.id, `${d.firstName} ${d.lastName}`)
-                      }>
-                      <Icon name="trash" type="entypo" />
-                    </TouchableOpacity>
-                  )}
+                  <>
+                    {deleteList && (
+                      <TouchableOpacity
+                        style={styles.option}
+                        onPress={() =>
+                          setDeleteDialog(d.id, `${d.firstName} ${d.lastName}`)
+                        }>
+                        <Icon name="trash" type="entypo" />
+                      </TouchableOpacity>
+                    )}
+                    {editList && (
+                      <TouchableOpacity
+                        style={styles.option}
+                        onPress={() => {
+                          setEditList(false);
+                          navigation.navigate('Edit', {data: d});
+                        }}>
+                        <Icon name="edit" type="font-awesome-5" />
+                      </TouchableOpacity>
+                    )}
+                  </>
                 </View>
               </Card>
             </TouchableOpacity>
@@ -140,6 +154,15 @@ const HomeScreen = ({
         onOpen={() => setOpen(!open)}
         onClose={() => setOpen(!open)}>
         <SpeedDial.Action
+          icon={{name: 'edit', color: '#fff'}}
+          title="Edit"
+          onPress={() => {
+            setEditList(true);
+            setDeleteList(false);
+            setOpen(false);
+          }}
+        />
+        <SpeedDial.Action
           icon={{name: 'add', color: '#fff'}}
           title="Add"
           onPress={() => {
@@ -152,6 +175,7 @@ const HomeScreen = ({
           title="Delete"
           onPress={() => {
             setDeleteList(true);
+            setEditList(false);
             setOpen(false);
           }}
         />
