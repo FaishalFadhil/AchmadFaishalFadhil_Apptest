@@ -25,9 +25,9 @@ function* fetchContactSaga() {
 function* fetchContactIdSaga({payload}) {
   try {
     const response = yield axios.get(
-      `https://contact.herokuapp.com/contact/${payload.id}`,
+      `https://contact.herokuapp.com/contact/${payload}`,
     );
-    yield put(fetchContactByIdSuccess(response.data));
+    yield put(fetchContactByIdSuccess(response.data.data));
   } catch (error) {
     yield put(fetchContactByIdFailure(error.message));
   }
@@ -36,8 +36,8 @@ function* fetchContactIdSaga({payload}) {
 function* createContactSaga({payload}) {
   try {
     const response = yield axios.post(
-      `https://contact.herokuapp.com/contact/${payload.id}`,
-      payload.body,
+      'https://contact.herokuapp.com/contact',
+      payload,
     );
     yield put(createContactSuccess(response.data));
   } catch (error) {

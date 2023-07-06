@@ -27,9 +27,9 @@ export const fetchContactByIdFailure = error => ({
   payload: error,
 });
 
-export const createContact = (id, body) => ({
+export const createContact = body => ({
   type: 'CREATE_CONTACT',
-  payload: {id, body},
+  payload: body,
 });
 
 export const createContactSuccess = data => ({
