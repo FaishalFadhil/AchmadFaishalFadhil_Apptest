@@ -1,6 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
-apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+// apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -102,6 +102,15 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+    task copyVectorIconsFonts(type: Copy) {
+        from '../../node_modules/react-native-vector-icons/Fonts'
+        into 'src/main/assets/fonts'
+        include '**/*.*'
+    }
+    preBuild.dependsOn(copyVectorIconsFonts)
+
+
+
 }
 
 dependencies {
