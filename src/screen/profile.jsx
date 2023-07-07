@@ -5,6 +5,7 @@ import {deleteContact, fetchContactById} from '../service/contact/actions';
 import {Card, Icon, Text} from '@rneui/themed';
 import DialogComponent from '../component/dialog';
 import {isUrl} from '../helper/isUrl';
+import AnimatedLottieView from 'lottie-react-native';
 
 const ProfileScreen = ({
   contact,
@@ -85,20 +86,20 @@ const ProfileScreen = ({
               style={styles.image}
               source={{
                 uri:
-                  !contact.photo || !isUrl(contact.photo)
+                  !contact?.photo || !isUrl(contact?.photo)
                     ? 'https://i1.sndcdn.com/avatars-000437232558-yuo0mv-t500x500.jpg'
                     : contact.photo,
               }}
             />
             <Text h4 h4Style={styles.name}>
-              {`${contact.firstName} ${contact.lastName}`}
+              {`${contact?.firstName} ${contact?.lastName}`}
             </Text>
-            <Text style={styles.age}>{`${contact.age} years old`}</Text>
+            <Text style={styles.age}>{`${contact?.age} years old`}</Text>
             <View style={styles.iconCont}>
               <TouchableOpacity
                 style={styles.option}
                 onPress={() =>
-                  setDeleteDialog(`${contact.firstName} ${contact.lastName}`)
+                  setDeleteDialog(`${contact?.firstName} ${contact?.lastName}`)
                 }>
                 <Icon name="trash" type="entypo" iconStyle={styles.icon} />
               </TouchableOpacity>
@@ -116,7 +117,14 @@ const ProfileScreen = ({
         </Card>
       ) : (
         <View>
-          <Text>Loading contact...</Text>
+          <AnimatedLottieView
+            source={{
+              uri: 'https://assets6.lottiefiles.com/packages/lf20_QNJdlFc7rM.json',
+            }}
+            autoPlay
+            loop
+            style={styles.imageLoading}
+          />
         </View>
       )}
       <DialogComponent
@@ -154,6 +162,10 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 100,
     marginBottom: 25,
+  },
+  imageLoading: {
+    width: 400,
+    height: 400,
   },
   name: {
     fontSize: 25,

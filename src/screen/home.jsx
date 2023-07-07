@@ -5,12 +5,14 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {fetchContactList, deleteContact} from '../service/contact/actions';
 import {Card, Icon, SpeedDial, Text} from '@rneui/themed';
 import DialogComponent from '../component/dialog';
 import {isUrl} from '../helper/isUrl';
+import AnimatedLottieView from 'lottie-react-native';
 
 const HomeScreen = ({
   contacts,
@@ -19,6 +21,8 @@ const HomeScreen = ({
   contactState,
   navigation,
 }) => {
+  const {height} = Dimensions.get('window');
+  const [splashScreen, setSplashScreen] = useState(true);
   const [open, setOpen] = useState(false);
   const [isDialog, setIsDialog] = useState(false);
   const [dialogState, setDialogState] = useState({
@@ -60,8 +64,10 @@ const HomeScreen = ({
   };
 
   useEffect(() => {
-    fetchContactList();
-    scrollViewRef.current.scrollTo({x: 0, y: 0, animated: true});
+    setTimeout(() => {
+      fetchContactList();
+      setSplashScreen(false);
+    }, 3500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -87,114 +93,157 @@ const HomeScreen = ({
 
   return (
     <>
-      <ScrollView style={styles.scrollView} ref={scrollViewRef}>
-        {contacts ? (
-          contacts.map(d => (
-            <TouchableOpacity
-              key={d.id}
-              style={styles.option}
-              onPress={() =>
-                navigation.navigate('Profile Contact', {id: d.id})
-              }>
-              <Card containerStyle={styles.container}>
-                <View style={styles.user}>
-                  <View style={styles.bioCont}>
-                    <Image
-                      resizeMode="cover"
-                      style={styles.image}
-                      source={{
-                        uri:
-                          !d.photo || !isUrl(d.photo)
-                            ? 'https://i1.sndcdn.com/avatars-000437232558-yuo0mv-t500x500.jpg'
-                            : d.photo,
-                      }}
-                    />
-                    <View style={styles.bio}>
-                      <Text h4 h4Style={styles.name}>
-                        {`${d.firstName} ${d.lastName}`}
-                      </Text>
-                      <Text style={styles.age}>{`${d.age} years old`}</Text>
-                    </View>
-                  </View>
-                  <>
-                    {deleteList && (
-                      <TouchableOpacity
-                        style={styles.option}
-                        onPress={() =>
-                          setDeleteDialog(d.id, `${d.firstName} ${d.lastName}`)
-                        }>
-                        <Icon name="trash" type="entypo" />
-                      </TouchableOpacity>
-                    )}
-                    {editList && (
-                      <TouchableOpacity
-                        style={styles.option}
-                        onPress={() => {
-                          setEditList(false);
-                          navigation.navigate('Edit', {data: d});
-                        }}>
-                        <Icon name="edit" type="font-awesome-5" />
-                      </TouchableOpacity>
-                    )}
-                  </>
-                </View>
-              </Card>
-            </TouchableOpacity>
-          ))
-        ) : (
-          <View>
-            <Text>Loading contacts...</Text>
+      {splashScreen ? (
+        <View style={styles.loadingContainer}>
+          <View style={styles.splash}>
+            <Text h3 h4Style={styles.name}>
+              Welcome to My Contact!
+            </Text>
+            <AnimatedLottieView
+              source={{
+                uri: 'https://assets1.lottiefiles.com/packages/lf20_eroqjb7w.json',
+              }}
+              autoPlay
+              loop
+              style={styles.imageSplash}
+            />
           </View>
-        )}
-      </ScrollView>
-      <SpeedDial
-        isOpen={open}
-        icon={{name: 'edit', color: '#fff'}}
-        openIcon={{name: 'close', color: '#fff'}}
-        onOpen={() => setOpen(!open)}
-        onClose={() => setOpen(!open)}>
-        <SpeedDial.Action
-          icon={{name: 'edit', color: '#fff'}}
-          title="Edit"
-          onPress={() => {
-            setEditList(true);
-            setDeleteList(false);
-            setOpen(false);
-          }}
-        />
-        <SpeedDial.Action
-          icon={{name: 'add', color: '#fff'}}
-          title="Add"
-          onPress={() => {
-            setOpen(false);
-            navigation.navigate('Create', {data: null});
-          }}
-        />
-        <SpeedDial.Action
-          icon={{name: 'delete', color: '#fff'}}
-          title="Delete"
-          onPress={() => {
-            setDeleteList(true);
-            setEditList(false);
-            setOpen(false);
-          }}
-        />
-      </SpeedDial>
-      <DialogComponent
-        isVisible={isDialog}
-        onBackdropPress={toggleDialog}
-        title={dialogState.title}
-        text={dialogState.text}
-        isInfo={dialogState.isInfo}
-        actFunc={dialogState.type === 'delete' ? setDelete : toggleDialogFetch}
-        actNoFunc={toggleDialog}
-        isLoading={contactState.loading}
-      />
+        </View>
+      ) : (
+        <>
+          <ScrollView style={styles.scrollView} ref={scrollViewRef}>
+            {contacts ? (
+              contacts.map(d => (
+                <TouchableOpacity
+                  key={d.id}
+                  style={styles.option}
+                  onPress={() =>
+                    navigation.navigate('Profile Contact', {id: d.id})
+                  }>
+                  <Card containerStyle={styles.container}>
+                    <View style={styles.user}>
+                      <View style={styles.bioCont}>
+                        <Image
+                          resizeMode="cover"
+                          style={styles.image}
+                          source={{
+                            uri:
+                              !d.photo || !isUrl(d.photo)
+                                ? 'https://i1.sndcdn.com/avatars-000437232558-yuo0mv-t500x500.jpg'
+                                : d.photo,
+                          }}
+                        />
+                        <View style={styles.bio}>
+                          <Text h4 h4Style={styles.name}>
+                            {`${d.firstName} ${d.lastName}`}
+                          </Text>
+                          <Text style={styles.age}>{`${d.age} years old`}</Text>
+                        </View>
+                      </View>
+                      <>
+                        {deleteList && (
+                          <TouchableOpacity
+                            style={styles.option}
+                            onPress={() =>
+                              setDeleteDialog(
+                                d.id,
+                                `${d.firstName} ${d.lastName}`,
+                              )
+                            }>
+                            <Icon name="trash" type="entypo" />
+                          </TouchableOpacity>
+                        )}
+                        {editList && (
+                          <TouchableOpacity
+                            style={styles.option}
+                            onPress={() => {
+                              setEditList(false);
+                              navigation.navigate('Edit', {data: d});
+                            }}>
+                            <Icon name="edit" type="font-awesome-5" />
+                          </TouchableOpacity>
+                        )}
+                      </>
+                    </View>
+                  </Card>
+                </TouchableOpacity>
+              ))
+            ) : (
+              <View
+                style={[styles.loadingContainer, {minHeight: height - 100}]}>
+                <AnimatedLottieView
+                  source={{
+                    uri: 'https://assets6.lottiefiles.com/packages/lf20_QNJdlFc7rM.json',
+                  }}
+                  autoPlay
+                  loop
+                />
+              </View>
+            )}
+          </ScrollView>
+          <SpeedDial
+            isOpen={open}
+            icon={{name: 'edit', color: '#fff'}}
+            openIcon={{name: 'close', color: '#fff'}}
+            onOpen={() => setOpen(!open)}
+            onClose={() => setOpen(!open)}>
+            <SpeedDial.Action
+              icon={{name: 'edit', color: '#fff'}}
+              title="Edit"
+              onPress={() => {
+                setEditList(true);
+                setDeleteList(false);
+                setOpen(false);
+              }}
+            />
+            <SpeedDial.Action
+              icon={{name: 'add', color: '#fff'}}
+              title="Add"
+              onPress={() => {
+                setOpen(false);
+                navigation.navigate('Create', {data: null});
+              }}
+            />
+            <SpeedDial.Action
+              icon={{name: 'delete', color: '#fff'}}
+              title="Delete"
+              onPress={() => {
+                setDeleteList(true);
+                setEditList(false);
+                setOpen(false);
+              }}
+            />
+          </SpeedDial>
+          <DialogComponent
+            isVisible={isDialog}
+            onBackdropPress={toggleDialog}
+            title={dialogState.title}
+            text={dialogState.text}
+            isInfo={dialogState.isInfo}
+            actFunc={
+              dialogState.type === 'delete' ? setDelete : toggleDialogFetch
+            }
+            actNoFunc={toggleDialog}
+            isLoading={contactState.loading}
+          />
+        </>
+      )}
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  splash: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  imageSplash: {height: 400, width: 400},
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     borderRadius: 16,
   },
